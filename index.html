@@ -1,0 +1,557 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pharmacy Management System</title>
+    <link href="https://cdn.tailwindcss.com" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/line-awesome/1.3.0/line-awesome/css/line-awesome.min.css" rel="stylesheet">
+    <style>
+        .sidebar {
+            transition: all 0.3s ease;
+        }
+        .nav-item:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+            border-radius: 0.375rem;
+        }
+        .card {
+            transition: all 0.3s ease;
+        }
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        }
+        .btn {
+            transition: all 0.3s ease;
+        }
+        .btn:hover {
+            transform: translateY(-2px);
+        }
+        .table-row:hover {
+            background-color: rgba(243, 244, 246, 1);
+        }
+        @media (max-width: 768px) {
+            .sidebar {
+                transform: translateX(-100%);
+            }
+            .sidebar.active {
+                transform: translateX(0);
+            }
+        }
+        .chart-container {
+            position: relative;
+            height: 300px;
+            width: 100%;
+        }
+    </style>
+</head>
+<body class="bg-gray-100 flex flex-col min-h-screen">
+    <!-- Header -->
+    <header class="bg-white shadow-md">
+        <div class="container mx-auto px-4 py-3 flex justify-between items-center">
+            <div class="flex items-center">
+                <button id="sidebar-toggle" class="mr-4 text-gray-600 lg:hidden">
+                    <i class="las la-bars text-2xl"></i>
+                </button>
+                <h1 class="text-xl font-bold text-blue-600">PharmaCare</h1>
+            </div>
+            <div class="flex items-center space-x-4">
+                <div class="relative">
+                    <input type="text" placeholder="Search..." class="px-4 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    <i class="las la-search absolute right-3 top-2.5 text-gray-400"></i>
+                </div>
+                <div class="relative">
+                    <i class="las la-bell text-2xl text-gray-600 cursor-pointer hover:text-blue-500"></i>
+                    <span class="absolute top-0 right-0 h-2 w-2 bg-red-500 rounded-full"></span>
+                </div>
+                <div class="flex items-center space-x-2">
+                    <img src="https://randomuser.me/api/portraits/men/1.jpg" alt="User" class="h-8 w-8 rounded-full">
+                    <span class="hidden md:inline text-gray-700">John Doe</span>
+                    <i class="las la-angle-down text-gray-600"></i>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <div class="flex flex-1">
+        <!-- Sidebar -->
+        <aside id="sidebar" class="sidebar bg-blue-800 text-white w-64 min-h-screen fixed lg:static z-30">
+            <div class="p-4">
+                <div class="flex items-center justify-center mb-8 pt-4">
+                    <i class="las la-clinic-medical text-4xl mr-2"></i>
+                    <h2 class="text-xl font-bold">Pharmacy System</h2>
+                </div>
+                <nav>
+                    <ul class="space-y-2">
+                        <li class="nav-item">
+                            <a href="#dashboard" class="flex items-center p-3 text-white">
+                                <i class="las la-tachometer-alt text-xl mr-3"></i>
+                                <span>Dashboard</span>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="#inventory" class="flex items-center p-3 text-white">
+                                <i class="las la-pills text-xl mr-3"></i>
+                                <span>Inventory</span>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="#sales" class="flex items-center p-3 text-white">
+                                <i class="las la-cash-register text-xl mr-3"></i>
+                                <span>Sales</span>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="#customers" class="flex items-center p-3 text-white">
+                                <i class="las la-users text-xl mr-3"></i>
+                                <span>Customers</span>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="#suppliers" class="flex items-center p-3 text-white">
+                                <i class="las la-truck text-xl mr-3"></i>
+                                <span>Suppliers</span>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="#reports" class="flex items-center p-3 text-white">
+                                <i class="las la-chart-bar text-xl mr-3"></i>
+                                <span>Reports</span>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="#settings" class="flex items-center p-3 text-white">
+                                <i class="las la-cog text-xl mr-3"></i>
+                                <span>Settings</span>
+                            </a>
+                        </li>
+                    </ul>
+                </nav>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="flex-1 p-4 lg:p-8 ml-0 lg:ml-64">
+            <div id="dashboard" class="container mx-auto">
+                <h2 class="text-2xl font-bold mb-6">Dashboard</h2>
+                
+                <!-- Stats Cards -->
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+                    <div class="card bg-white rounded-lg shadow-md p-6">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-gray-500">Total Sales</p>
+                                <h3 class="text-2xl font-bold">$24,580</h3>
+                                <p class="text-green-500 text-sm"><i class="las la-arrow-up"></i> 12% from last month</p>
+                            </div>
+                            <div class="bg-blue-100 p-3 rounded-full">
+                                <i class="las la-shopping-cart text-2xl text-blue-500"></i>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="card bg-white rounded-lg shadow-md p-6">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-gray-500">Total Orders</p>
+                                <h3 class="text-2xl font-bold">1,245</h3>
+                                <p class="text-green-500 text-sm"><i class="las la-arrow-up"></i> 8% from last month</p>
+                            </div>
+                            <div class="bg-green-100 p-3 rounded-full">
+                                <i class="las la-file-invoice text-2xl text-green-500"></i>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="card bg-white rounded-lg shadow-md p-6">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-gray-500">Low Stock Items</p>
+                                <h3 class="text-2xl font-bold">28</h3>
+                                <p class="text-red-500 text-sm"><i class="las la-arrow-up"></i> 5% from last week</p>
+                            </div>
+                            <div class="bg-red-100 p-3 rounded-full">
+                                <i class="las la-exclamation-triangle text-2xl text-red-500"></i>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="card bg-white rounded-lg shadow-md p-6">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-gray-500">Total Customers</p>
+                                <h3 class="text-2xl font-bold">3,872</h3>
+                                <p class="text-green-500 text-sm"><i class="las la-arrow-up"></i> 10% from last month</p>
+                            </div>
+                            <div class="bg-purple-100 p-3 rounded-full">
+                                <i class="las la-users text-2xl text-purple-500"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Charts Section -->
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+                    <div class="card bg-white rounded-lg shadow-md p-6">
+                        <h3 class="text-lg font-semibold mb-4">Sales Overview</h3>
+                        <div class="chart-container" id="sales-chart"></div>
+                    </div>
+                    
+                    <div class="card bg-white rounded-lg shadow-md p-6">
+                        <h3 class="text-lg font-semibold mb-4">Top Selling Products</h3>
+                        <div class="chart-container" id="products-chart"></div>
+                    </div>
+                </div>
+                
+                <!-- Recent Orders Table -->
+                <div class="card bg-white rounded-lg shadow-md p-6 mb-8">
+                    <div class="flex justify-between items-center mb-4">
+                        <h3 class="text-lg font-semibold">Recent Orders</h3>
+                        <button class="btn bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg flex items-center">
+                            <i class="las la-plus mr-1"></i> New Order
+                        </button>
+                    </div>
+                    <div class="overflow-x-auto">
+                        <table class="min-w-full">
+                            <thead>
+                                <tr class="bg-gray-100">
+                                    <th class="py-3 px-4 text-left">Order ID</th>
+                                    <th class="py-3 px-4 text-left">Customer</th>
+                                    <th class="py-3 px-4 text-left">Date</th>
+                                    <th class="py-3 px-4 text-left">Amount</th>
+                                    <th class="py-3 px-4 text-left">Status</th>
+                                    <th class="py-3 px-4 text-left">Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr class="table-row border-b">
+                                    <td class="py-3 px-4">#ORD-001</td>
+                                    <td class="py-3 px-4">Sarah Johnson</td>
+                                    <td class="py-3 px-4">May 15, 2023</td>
+                                    <td class="py-3 px-4">$125.00</td>
+                                    <td class="py-3 px-4"><span class="bg-green-100 text-green-800 px-2 py-1 rounded-full text-xs">Completed</span></td>
+                                    <td class="py-3 px-4">
+                                        <button class="text-blue-500 hover:text-blue-700 mr-2"><i class="las la-eye"></i></button>
+                                        <button class="text-gray-500 hover:text-gray-700"><i class="las la-print"></i></button>
+                                    </td>
+                                </tr>
+                                <tr class="table-row border-b">
+                                    <td class="py-3 px-4">#ORD-002</td>
+                                    <td class="py-3 px-4">Michael Brown</td>
+                                    <td class="py-3 px-4">May 14, 2023</td>
+                                    <td class="py-3 px-4">$78.50</td>
+                                    <td class="py-3 px-4"><span class="bg-yellow-100 text-yellow-800 px-2 py-1 rounded-full text-xs">Pending</span></td>
+                                    <td class="py-3 px-4">
+                                        <button class="text-blue-500 hover:text-blue-700 mr-2"><i class="las la-eye"></i></button>
+                                        <button class="text-gray-500 hover:text-gray-700"><i class="las la-print"></i></button>
+                                    </td>
+                                </tr>
+                                <tr class="table-row border-b">
+                                    <td class="py-3 px-4">#ORD-003</td>
+                                    <td class="py-3 px-4">Emily Davis</td>
+                                    <td class="py-3 px-4">May 14, 2023</td>
+                                    <td class="py-3 px-4">$245.75</td>
+                                    <td class="py-3 px-4"><span class="bg-green-100 text-green-800 px-2 py-1 rounded-full text-xs">Completed</span></td>
+                                    <td class="py-3 px-4">
+                                        <button class="text-blue-500 hover:text-blue-700 mr-2"><i class="las la-eye"></i></button>
+                                        <button class="text-gray-500 hover:text-gray-700"><i class="las la-print"></i></button>
+                                    </td>
+                                </tr>
+                                <tr class="table-row border-b">
+                                    <td class="py-3 px-4">#ORD-004</td>
+                                    <td class="py-3 px-4">Robert Wilson</td>
+                                    <td class="py-3 px-4">May 13, 2023</td>
+                                    <td class="py-3 px-4">$36.25</td>
+                                    <td class="py-3 px-4"><span class="bg-red-100 text-red-800 px-2 py-1 rounded-full text-xs">Cancelled</span></td>
+                                    <td class="py-3 px-4">
+                                        <button class="text-blue-500 hover:text-blue-700 mr-2"><i class="las la-eye"></i></button>
+                                        <button class="text-gray-500 hover:text-gray-700"><i class="las la-print"></i></button>
+                                    </td>
+                                </tr>
+                                <tr class="table-row">
+                                    <td class="py-3 px-4">#ORD-005</td>
+                                    <td class="py-3 px-4">Jennifer Taylor</td>
+                                    <td class="py-3 px-4">May 12, 2023</td>
+                                    <td class="py-3 px-4">$189.00</td>
+                                    <td class="py-3 px-4"><span class="bg-blue-100 text-blue-800 px-2 py-1 rounded-full text-xs">Processing</span></td>
+                                    <td class="py-3 px-4">
+                                        <button class="text-blue-500 hover:text-blue-700 mr-2"><i class="las la-eye"></i></button>
+                                        <button class="text-gray-500 hover:text-gray-700"><i class="las la-print"></i></button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="flex justify-between items-center mt-4">
+                        <p class="text-gray-500">Showing 5 of 25 entries</p>
+                        <div class="flex space-x-1">
+                            <button class="px-3 py-1 border rounded hover:bg-gray-100">Previous</button>
+                            <button class="px-3 py-1 border rounded bg-blue-500 text-white">1</button>
+                            <button class="px-3 py-1 border rounded hover:bg-gray-100">2</button>
+                            <button class="px-3 py-1 border rounded hover:bg-gray-100">3</button>
+                            <button class="px-3 py-1 border rounded hover:bg-gray-100">Next</button>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Inventory Alert -->
+                <div class="card bg-white rounded-lg shadow-md p-6">
+                    <div class="flex justify-between items-center mb-4">
+                        <h3 class="text-lg font-semibold">Low Stock Alert</h3>
+                        <button class="btn bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg flex items-center">
+                            <i class="las la-sync mr-1"></i> Restock
+                        </button>
+                    </div>
+                    <div class="overflow-x-auto">
+                        <table class="min-w-full">
+                            <thead>
+                                <tr class="bg-gray-100">
+                                    <th class="py-3 px-4 text-left">Product ID</th>
+                                    <th class="py-3 px-4 text-left">Name</th>
+                                    <th class="py-3 px-4 text-left">Category</th>
+                                    <th class="py-3 px-4 text-left">Current Stock</th>
+                                    <th class="py-3 px-4 text-left">Reorder Level</th>
+                                    <th class="py-3 px-4 text-left">Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr class="table-row border-b">
+                                    <td class="py-3 px-4">#PRD-001</td>
+                                    <td class="py-3 px-4">Paracetamol 500mg</td>
+                                    <td class="py-3 px-4">Pain Relief</td>
+                                    <td class="py-3 px-4"><span class="text-red-500 font-medium">5</span></td>
+                                    <td class="py-3 px-4">20</td>
+                                    <td class="py-3 px-4">
+                                        <button class="bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded text-sm">Order</button>
+                                    </td>
+                                </tr>
+                                <tr class="table-row border-b">
+                                    <td class="py-3 px-4">#PRD-015</td>
+                                    <td class="py-3 px-4">Amoxicillin 250mg</td>
+                                    <td class="py-3 px-4">Antibiotics</td>
+                                    <td class="py-3 px-4"><span class="text-red-500 font-medium">8</span></td>
+                                    <td class="py-3 px-4">25</td>
+                                    <td class="py-3 px-4">
+                                        <button class="bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded text-sm">Order</button>
+                                    </td>
+                                </tr>
+                                <tr class="table-row border-b">
+                                    <td class="py-3 px-4">#PRD-023</td>
+                                    <td class="py-3 px-4">Vitamin C 1000mg</td>
+                                    <td class="py-3 px-4">Supplements</td>
+                                    <td class="py-3 px-4"><span class="text-red-500 font-medium">12</span></td>
+                                    <td class="py-3 px-4">30</td>
+                                    <td class="py-3 px-4">
+                                        <button class="bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded text-sm">Order</button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-white shadow-inner py-6">
+        <div class="container mx-auto px-4">
+            <div class="flex flex-col md:flex-row justify-between items-center">
+                <div class="mb-4 md:mb-0">
+                    <p class="text-gray-600">&copy; 2023 PharmaCare Management System. All rights reserved.</p>
+                </div>
+                <div class="flex space-x-4">
+                    <a href="#" class="text-gray-500 hover:text-blue-500"><i class="lab la-facebook-f text-xl"></i></a>
+                    <a href="#" class="text-gray-500 hover:text-blue-500"><i class="lab la-twitter text-xl"></i></a>
+                    <a href="#" class="text-gray-500 hover:text-blue-500"><i class="lab la-linkedin-in text-xl"></i></a>
+                    <a href="#" class="text-gray-500 hover:text-blue-500"><i class="lab la-instagram text-xl"></i></a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Sidebar toggle for mobile
+        document.getElementById('sidebar-toggle').addEventListener('click', function() {
+            document.getElementById('sidebar').classList.toggle('active');
+        });
+
+        // Close sidebar when clicking outside on mobile
+        document.addEventListener('click', function(event) {
+            const sidebar = document.getElementById('sidebar');
+            const sidebarToggle = document.getElementById('sidebar-toggle');
+            
+            if (window.innerWidth < 1024 && 
+                !sidebar.contains(event.target) && 
+                !sidebarToggle.contains(event.target) &&
+                sidebar.classList.contains('active')) {
+                sidebar.classList.remove('active');
+            }
+        });
+
+        // Simple chart rendering using canvas
+        function renderSalesChart() {
+            const canvas = document.createElement('canvas');
+            canvas.id = 'salesCanvas';
+            document.getElementById('sales-chart').appendChild(canvas);
+            
+            const ctx = canvas.getContext('2d');
+            const width = canvas.clientWidth;
+            const height = canvas.clientHeight;
+            
+            canvas.width = width;
+            canvas.height = height;
+            
+            const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'];
+            const data = [5000, 7500, 6800, 9200, 8100, 11500];
+            
+            // Draw background
+            ctx.fillStyle = '#f9fafb';
+            ctx.fillRect(0, 0, width, height);
+            
+            // Draw grid lines
+            ctx.strokeStyle = '#e5e7eb';
+            ctx.lineWidth = 1;
+            
+            // Horizontal grid lines
+            const maxValue = Math.max(...data);
+            const gridStep = height / 5;
+            
+            for (let i = 0; i <= 5; i++) {
+                const y = height - (i * gridStep);
+                ctx.beginPath();
+                ctx.moveTo(40, y);
+                ctx.lineTo(width - 20, y);
+                ctx.stroke();
+                
+                // Add labels
+                ctx.fillStyle = '#6b7280';
+                ctx.font = '10px Arial';
+                ctx.textAlign = 'right';
+                ctx.fillText(`$${Math.round(maxValue * i / 5)}`, 35, y + 4);
+            }
+            
+            // Draw bars
+            const barWidth = (width - 60) / months.length - 10;
+            const barSpacing = 10;
+            
+            for (let i = 0; i < months.length; i++) {
+                const x = 50 + i * (barWidth + barSpacing);
+                const barHeight = (data[i] / maxValue) * (height - 40);
+                const y = height - barHeight - 20;
+                
+                // Create gradient
+                const gradient = ctx.createLinearGradient(0, y, 0, height - 20);
+                gradient.addColorStop(0, '#3b82f6');
+                gradient.addColorStop(1, '#93c5fd');
+                
+                ctx.fillStyle = gradient;
+                ctx.fillRect(x, y, barWidth, barHeight);
+                
+                // Add month labels
+                ctx.fillStyle = '#6b7280';
+                ctx.font = '10px Arial';
+                ctx.textAlign = 'center';
+                ctx.fillText(months[i], x + barWidth / 2, height - 5);
+            }
+            
+            // Add title
+            ctx.fillStyle = '#1f2937';
+            ctx.font = 'bold 14px Arial';
+            ctx.textAlign = 'left';
+            ctx.fillText('Monthly Sales ($)', 40, 20);
+        }
+
+        function renderProductsChart() {
+            const canvas = document.createElement('canvas');
+            canvas.id = 'productsCanvas';
+            document.getElementById('products-chart').appendChild(canvas);
+            
+            const ctx = canvas.getContext('2d');
+            const width = canvas.clientWidth;
+            const height = canvas.clientHeight;
+            
+            canvas.width = width;
+            canvas.height = height;
+            
+            // Draw background
+            ctx.fillStyle = '#f9fafb';
+            ctx.fillRect(0, 0, width, height);
+            
+            // Data for pie chart
+            const data = [35, 25, 20, 15, 5];
+            const labels = ['Pain Relief', 'Antibiotics', 'Vitamins', 'Skincare', 'Others'];
+            const colors = ['#3b82f6', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6'];
+            
+            // Draw pie chart
+            let total = data.reduce((sum, value) => sum + value, 0);
+            let startAngle = 0;
+            const centerX = width / 2;
+            const centerY = height / 2;
+            const radius = Math.min(width, height) / 2 - 40;
+            
+            // Draw title
+            ctx.fillStyle = '#1f2937';
+            ctx.font = 'bold 14px Arial';
+            ctx.textAlign = 'center';
+            ctx.fillText('Top Selling Product Categories', centerX, 20);
+            
+            // Draw pie slices
+            for (let i = 0; i < data.length; i++) {
+                const sliceAngle = 2 * Math.PI * data[i] / total;
+                
+                ctx.beginPath();
+                ctx.moveTo(centerX, centerY);
+                ctx.arc(centerX, centerY, radius, startAngle, startAngle + sliceAngle);
+                ctx.closePath();
+                
+                ctx.fillStyle = colors[i];
+                ctx.fill();
+                
+                // Draw labels
+                const labelAngle = startAngle + sliceAngle / 2;
+                const labelX = centerX + (radius + 20) * Math.cos(labelAngle);
+                const labelY = centerY + (radius + 20) * Math.sin(labelAngle);
+                
+                ctx.fillStyle = '#1f2937';
+                ctx.font = '12px Arial';
+                ctx.textAlign = labelX > centerX ? 'left' : 'right';
+                ctx.fillText(`${labels[i]} (${data[i]}%)`, labelX, labelY);
+                
+                startAngle += sliceAngle;
+            }
+            
+            // Draw center circle (donut hole)
+            ctx.beginPath();
+            ctx.arc(centerX, centerY, radius / 2, 0, 2 * Math.PI);
+            ctx.fillStyle = '#ffffff';
+            ctx.fill();
+            
+            // Draw center text
+            ctx.fillStyle = '#1f2937';
+            ctx.font = 'bold 14px Arial';
+            ctx.textAlign = 'center';
+            ctx.fillText('Sales by', centerX, centerY - 10);
+            ctx.fillText('Category', centerX, centerY + 10);
+        }
+
+        // Initialize charts when page loads
+        window.addEventListener('load', function() {
+            renderSalesChart();
+            renderProductsChart();
+        });
+
+        // Redraw charts on window resize
+        window.addEventListener('resize', function() {
+            const salesChart = document.getElementById('salesCanvas');
+            const productsChart = document.getElementById('productsCanvas');
+            
+            if (salesChart) salesChart.remove();
+            if (productsChart) productsChart.remove();
+            
+            renderSalesChart();
+            renderProductsChart();
+        });
+    </script>
+</body>
+</html>
